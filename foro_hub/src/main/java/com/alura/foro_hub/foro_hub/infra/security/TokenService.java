@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import static com.auth0.jwt.JWT.*;
@@ -23,6 +24,8 @@ public class TokenService {
     public String generarToken(Registro registro){
         try {
             var algoritmo = Algorithm.HMAC256(secret);
+
+            System.out.println("Usuario logueado: " + registro.getLogin());
             return create()
                     .withIssuer("foro-hub")
                     .withSubject(registro.getLogin())
@@ -35,7 +38,15 @@ public class TokenService {
     }
 
     private Instant fechaExpiracion() {
+
+        /*return LocalDateTime.now()
+                .plusHours(2)
+                .atZone(ZoneId.of("America/Bogota"))
+                .toInstant();*/
+        //return Instant.now().plusSeconds(7200); // 2 horas
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-05:00"));
+        //var ahora = LocalDateTime.now();
+
     }
     public String getSubject(String tokenJWT){
         try {
@@ -48,5 +59,7 @@ public class TokenService {
         } catch (JWTVerificationException exception){
             throw new RuntimeException("Token JWT invalido o expirado!");
         }
+
     }
+
 }
